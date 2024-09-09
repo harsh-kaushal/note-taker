@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Define the variables in "$(var.*) expressions" -->
+<?define Name = "Postgres" ?>
+<?define Manufacturer = "Note-Taker" ?>
+<?define Version = "1.0.0.0" ?>
+<?define ProductCode = "e9dab3e0-2620-4d57-a9a3-2cdafa9331c7" ?>
+<?define UpgradeCode = "f6f66aed-90fb-4ecb-986b-bb1821db736a" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Package Name="$(Name)"
+			 Manufacturer="$(Manufacturer)"
+			 Version="$(Version)"
+			 ProductCode="$(var.ProductCode)"
+			 UpgradeCode="$(var.UpgradeCode)"
+			 Compressed="true">
+	<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+	<Media Id="1" Cabinet="Postgres.cab" EmbedCab="yes"/>
+
+	<!--Set the directory where we net to install-->
+	<StandardDirectory Id="ProgramFiles64Folder">
+		<Directory Id="INSTALLFOLDER" Name="!(bind.Property.Manufacturer)">
+			<Directory Id="DIR_PSQL" Name="postgres">
+				<Files Include="C:\Users\hkaus\source\binaries\pgsql\**">
+					<Exclude Files="C:\Users\hkaus\source\binaries\pgsql\bin\pg_ctl.exe"/>
+				</Files>
+			</Directory>
+			<Directory Id="DIR_PGDATA" Name="database"/>
+		</Directory>
+	</StandardDirectory>
+
+	<DirectoryRef Id="DIR_PSQL">
+		<Directory Id="DIR_PSQL_BIN" Name="bin">
+			<Component Id="POSTGRES_COMPONENT">
+				<File Id="PG_CTL" Source="C:\Users\hkaus\source\binaries\pgsql\bin\pg_ctl.exe"/>
+			</Component>
+		</Directory>
+	</DirectoryRef>
+
+  </Package>
+</Wix>

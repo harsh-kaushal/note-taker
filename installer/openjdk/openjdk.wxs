@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- Define the variables in "$(var.*) expressions" -->
+<?define Name = "Java" ?>
+<?define Manufacturer = "Note-Taker" ?>
+<?define Version = "1.0.0.0" ?>
+<?define ProductCode = "ad20dc97-c6b9-4f91-a70c-17480291f803" ?>
+<?define UpgradeCode = "7bfffd96-31c2-4410-b5ee-b5c648aa673d" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Package Name="$(Name)"
+			 Manufacturer="$(Manufacturer)"
+			 Version="$(Version)"
+			 ProductCode="$(var.ProductCode)"
+			 UpgradeCode="$(var.UpgradeCode)"
+			 Compressed="true">
+
+	<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+	<Media Id="1" Cabinet="JDK.cab" EmbedCab="yes"/>
+
+	<!--Set the directory where we net to install-->
+	<StandardDirectory Id="ProgramFiles64Folder">
+		<Directory Id ="INSTALLFOLDER" Name="!(bind.Property.Manufacturer)">
+			<!--<Directory Id="DIR_BINARY" Name="bin">-->
+				<Directory Id="DIR_JDK" Name="jdk">
+					<Files Include="C:\Users\hkaus\source\binaries\jdk-22.0.2\**"/>
+				</Directory>
+			<!--</Directory>-->
+		</Directory>
+	</StandardDirectory>
+  </Package>
+</Wix>
