@@ -44,7 +44,12 @@
 
 	<StandardDirectory Id="CommonAppDataFolder">
 		<Directory Id="DIR_DATAFOLDER" Name="!(bind.Property.Manufacturer)">
-			<Directory Id="DIR_PGDATA" Name="database"/>
+			<Directory Id="DIR_PGDATA" Name="database">
+				<Component Id="PGDATA_COMPONENT" Guid="243c1772-89eb-4643-9b74-3549432c7229">
+					<CreateFolder />
+					<RemoveFile Name="*" On="uninstall" Directory="DIR_PGDATA" />
+				</Component>
+			</Directory>
 		</Directory>
 	</StandardDirectory>
 
@@ -68,7 +73,7 @@
 				Directory="SystemFolder"
 				ExeCommand='sc start "PostgreSQL"'
 				Execute="deferred"
-				Return="asyncWait"
+				Return="check"
 				Impersonate="no"
 	/>	
 
@@ -103,6 +108,14 @@
 					Return="ignore"
 					Impersonate="no"
 	/>
+
+	<CustomAction Id="CleanPG"
+					Directory="DIR_PGDATA"
+					ExeCommand="cmd.exe /C rmdir /S /Q &quot;[DIR_PGDATA]&quot;"
+					Execute="deferred"
+					Return="ignore"
+					Impersonate="no" 
+	/>
 		
 		<!--CREATE DATABASE note_taker;-->
 		<!--ALTER USER postgres WITH PASSWORD 'guest';-->
@@ -116,6 +129,7 @@
 
 		<Custom Action="StopPG" Before="RemovePG" />
 		<Custom Action="RemovePG" Before="RemoveFiles"/>
+		<Custom Action="CleanPG" After="RemoveFiles"/>
 
 	</InstallExecuteSequence>
 		

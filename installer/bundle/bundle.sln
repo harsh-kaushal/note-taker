@@ -4,12 +4,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "bundle", "bundle.wixproj", "{C5011B41-3D43-4C88-9CEC-6616972FDFE9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FE635393-46FB-4158-A03A-6034BCB1EEE6} = {FE635393-46FB-4158-A03A-6034BCB1EEE6}
+	EndProjectSection
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "openjdk", "..\openjdk\openjdk.wixproj", "{B2473A11-661D-4D77-B535-2759BB9FF48C}"
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "postgres", "..\postgres\postgres.wixproj", "{D951E430-DD8C-47A8-902D-64DACB33B204}"
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "service", "..\service\service.wixproj", "{FE635393-46FB-4158-A03A-6034BCB1EEE6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{002A2662-2249-4B7F-B058-E50E4B05B1FC} = {002A2662-2249-4B7F-B058-E50E4B05B1FC}
+	EndProjectSection
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "nssmMerge", "..\nssmMerge\nssmMerge.wixproj", "{002A2662-2249-4B7F-B058-E50E4B05B1FC}"
 EndProject

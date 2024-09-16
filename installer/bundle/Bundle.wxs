@@ -8,9 +8,10 @@
 	</BootstrapperApplication>
 
 	<Chain>
-	  <MsiPackage SourceFile="$(var.SolutionDir)\..\nssm\bin\x64\Debug\nssm.msi" />
 	  <MsiPackage SourceFile="$(var.SolutionDir)\..\openjdk\bin\x64\Debug\openjdk.msi" />
 	  <MsiPackage SourceFile="$(var.SolutionDir)\..\postgres\bin\x64\Debug\postgres.msi" />
+	  <MsiPackage SourceFile="$(var.SolutionDir)\..\service\bin\x64\Debug\service.msi" />
+
 	</Chain>
 
   </Bundle>
