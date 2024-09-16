@@ -20,11 +20,11 @@
 	<!--Set the directory where we net to install-->
 	<StandardDirectory Id="ProgramFiles64Folder">
 		<Directory Id ="INSTALLFOLDER" Name="!(bind.Property.Manufacturer)">
-			<!--<Directory Id="DIR_BINARY" Name="bin">-->
+			<Directory Id="DIR_BINARY" Name="bin">
 				<Directory Id="DIR_JDK" Name="jdk">
 					<Files Include="C:\Users\hkaus\source\binaries\jdk-22.0.2\**"/>
 				</Directory>
-			<!--</Directory>-->
+			</Directory>
 		</Directory>
 	</StandardDirectory>
   </Package>

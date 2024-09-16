@@ -1,13 +1,17 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
-  <Bundle Name="bundle" Manufacturer="TODO Manufacturer" Version="1.0.0.0" UpgradeCode="d8a63964-b1d0-41b6-8beb-1fab67cbf2cc">
-    <BootstrapperApplication>
-      <bal:WixStandardBootstrapperApplication LicenseUrl="https://www.example.com/license" Theme="hyperlinkLicense" />
-    </BootstrapperApplication>
+  <Bundle Name="Note-Taker" Manufacturer="Darsh &amp; Harsh Co." Version="1.0.0.0" UpgradeCode="d8a63964-b1d0-41b6-8beb-1fab67cbf2cc">
+	<BootstrapperApplication>
+	  <bal:WixStandardBootstrapperApplication 
+		  LicenseUrl=""
+		  Theme="hyperlinkLicense"
+		  SuppressOptionsUI="yes"/>
+	</BootstrapperApplication>
 
-    <Chain>
-      <!-- TODO: Define the list of chained packages. -->
-      <!-- <MsiPackage SourceFile="path\to\your.msi" /> -->
-    </Chain>
+	<Chain>
+	  <MsiPackage SourceFile="$(var.SolutionDir)\..\nssm\bin\x64\Debug\nssm.msi" />
+	  <MsiPackage SourceFile="$(var.SolutionDir)\..\openjdk\bin\x64\Debug\openjdk.msi" />
+	  <MsiPackage SourceFile="$(var.SolutionDir)\..\postgres\bin\x64\Debug\postgres.msi" />
+	</Chain>
 
   </Bundle>
 </Wix>

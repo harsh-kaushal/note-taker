@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Define the variables in "$(var.*) expressions" -->
+<?define Name = "service" ?>
+<?define Manufacturer = "Note-Taker" ?>
+<?define Version = "1.0.0.0" ?>
+<?define ProductCode = "ff4c7d78-0551-47ba-9e91-f6d6b4c35f52" ?>
+<?define UpgradeCode = "6b9bbc19-5be2-4d80-9742-48730c032473" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Package Name="$(Name)"
+			 Manufacturer="$(Manufacturer)"
+			 Version="$(Version)"
+			 ProductCode="$(var.ProductCode)"
+			 UpgradeCode="$(var.UpgradeCode)"
+			 Compressed="true">
+
+		<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+		<Media Id="1" Cabinet="service.cab" EmbedCab="yes"/>
+
+		<StandardDirectory Id="ProgramFiles64Folder">
+			<Directory Id="INSTALLFOLDER" Name="!(bind.Property.Manufacturer)">
+				<Directory Id="DIR_BINARY" Name="bin">
+					<Directory Id="DIR_JDK" Name="jdk"/>
+					<Directory Id="DIR_NSSM" Name="nssm">
+						<Merge Id="nssmMerge" SourceFile="$(var.SolutionDir)\..\nssmMerge\bin\x64\Debug\nssmMerge.msm" DiskId="1" Language="1033"/>
+					</Directory>
+				</Directory>
+				<Directory Id="DIR_SERVICE" Name="services">
+					<File Id="JavaServiceJar" Source="C:\Users\hkaus\source\binaries\web-0.0.1-SNAPSHOT.jar" />
+				</Directory>
+			</Directory>
+		</StandardDirectory>
+
+		<Feature Id="ProductFeature" Title="My Java Service" Level="1">
+			<ComponentRef Id="JavaServiceJar" />
+			<MergeRef Id="nssmMerge" />
+		</Feature>
+
+		<!--<ComponentRef Id="NSSMComponent"/>-->
+		
+		<CustomAction Id="NSSMServiceInstaller"
+					  Directory="DIR_SERVICE"
+					  ExeCommand='[DIR_NSSM]nssm.exe install NoteTaker "[DIR_JDK]bin\java.exe" "-jar web-0.0.1-SNAPSHOT.jar"'
+					  Execute="deferred"
+					  Return="check"
+					  Impersonate="no"
+		/>
+
+		<CustomAction Id="NSSMServiceConfig"
+					  Directory="DIR_SERVICE"
+						ExeCommand="[DIR_NSSM]nssm.exe set NoteTaker AppDirectory [DIR_SERVICE]"
+						Execute="deferred"
+						Return="check"
+						Impersonate="no"
+		/>
+
+		<CustomAction Id="StopNSSMService"
+						Directory="SystemFolder"
+						ExeCommand="sc stop NoteTaker"
+						Execute="deferred"
+						Return="ignore"
+						Impersonate="no"
+		/>
+
+		<CustomAction Id="RemoveNSSMService"
+						Directory="SystemFolder"
+						ExeCommand="sc delete NoteTaker"
+						Execute="deferred"
+						Return="ignore"
+						Impersonate="no"
+		/>
+
+
+		<InstallExecuteSequence>
+			<Custom Action="NSSMServiceInstaller" After="InstallFiles" Condition="NOT Installed"/>
+			<Custom Action="NSSMServiceConfig" After="NSSMServiceInstaller" Condition="NOT Installed"/>
+			<Custom Action="StopNSSMService" Before="RemoveNSSMService"/>
+			<Custom Action="RemoveNSSMService" Before="RemoveFiles"/>
+		</InstallExecuteSequence>
+
+	</Package>
+</Wix>

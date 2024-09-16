@@ -2,8 +2,11 @@
   <PropertyGroup>
     <OutputType>Bundle</OutputType>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="WixToolset.Bal.wixext" Version="5.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\openjdk\openjdk.wixproj" />
+    <ProjectReference Include="..\postgres\postgres.wixproj" />
   </ItemGroup>
 </Project>

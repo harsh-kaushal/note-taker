@@ -19,22 +19,106 @@
 	<!--Set the directory where we net to install-->
 	<StandardDirectory Id="ProgramFiles64Folder">
 		<Directory Id="INSTALLFOLDER" Name="!(bind.Property.Manufacturer)">
-			<Directory Id="DIR_PSQL" Name="postgres">
-				<Files Include="C:\Users\hkaus\source\binaries\pgsql\**">
-					<Exclude Files="C:\Users\hkaus\source\binaries\pgsql\bin\pg_ctl.exe"/>
-				</Files>
+			<Directory Id="DIR_BINARY" Name="bin">
+				<Directory Id="DIR_PSQL" Name="postgres">
+					<Files Include="C:\Users\hkaus\source\binaries\pgsql\**">
+						<Exclude Files="C:\Users\hkaus\source\binaries\pgsql\bin\pg_ctl.exe"/>
+						<Exclude Files="C:\Users\hkaus\source\binaries\pgsql\bin\initdb.exe"/>
+						<Exclude Files="C:\Users\hkaus\source\binaries\pgsql\bin\psql.exe"/>
+
+					</Files>
+				</Directory>
 			</Directory>
-			<Directory Id="DIR_PGDATA" Name="database"/>
 		</Directory>
 	</StandardDirectory>
-
+		
 	<DirectoryRef Id="DIR_PSQL">
 		<Directory Id="DIR_PSQL_BIN" Name="bin">
-			<Component Id="POSTGRES_COMPONENT">
+			<Component Id="POSTGRES_COMPONENT" Guid="ee6e3fa7-7263-4911-999f-f3eeac98b50d" >
 				<File Id="PG_CTL" Source="C:\Users\hkaus\source\binaries\pgsql\bin\pg_ctl.exe"/>
+				<File Id="INITDB" Source="C:\Users\hkaus\source\binaries\pgsql\bin\initdb.exe"/>
+				<File Id="PSQL" Source="C:\Users\hkaus\source\binaries\pgsql\bin\psql.exe"/>
 			</Component>
 		</Directory>
 	</DirectoryRef>
 
-  </Package>
+	<StandardDirectory Id="CommonAppDataFolder">
+		<Directory Id="DIR_DATAFOLDER" Name="!(bind.Property.Manufacturer)">
+			<Directory Id="DIR_PGDATA" Name="database"/>
+		</Directory>
+	</StandardDirectory>
+
+	<CustomAction Id="PGINIT"
+					FileRef="INITDB"
+					ExeCommand='-D "[DIR_DATAFOLDER]database" -U postgres'
+					Execute="deferred"
+					Return="check"
+					Impersonate="no"
+	/>
+
+	<CustomAction Id="PGREG"
+					FileRef="PG_CTL"
+					ExeCommand='register -D "[DIR_PGDATA]"'
+					Execute="deferred"
+					Return="check"
+					Impersonate="no"
+	/>
+
+	<CustomAction Id="StartPG"
+				Directory="SystemFolder"
+				ExeCommand='sc start "PostgreSQL"'
+				Execute="deferred"
+				Return="asyncWait"
+				Impersonate="no"
+	/>	
+
+	<CustomAction Id="PGCONF1"
+					FileRef="PSQL"
+					ExeCommand='-U postgres -c "CREATE DATABASE note_taker;"'
+					Execute="deferred"
+					Return="check"
+					Impersonate="no"
+	/>
+	<CustomAction Id="PGCONF2"
+					FileRef="PSQL"
+					ExeCommand='-U postgres -c "ALTER USER postgres WITH PASSWORD &apos;guest&apos;;"'
+					Execute="deferred"
+					Return="check"
+					Impersonate="no"
+	/>
+
+
+	<CustomAction Id="StopPG"
+					Directory="SystemFolder"
+					ExeCommand='sc stop "PostgreSQL"'
+					Execute="deferred"
+					Return="ignore"
+					Impersonate="no"
+	/>
+
+	<CustomAction Id="RemovePG"
+					Directory="SystemFolder"
+					ExeCommand='sc delete "PostgreSQL"'
+					Execute="deferred"
+					Return="ignore"
+					Impersonate="no"
+	/>
+		
+		<!--CREATE DATABASE note_taker;-->
+		<!--ALTER USER postgres WITH PASSWORD 'guest';-->
+
+	<InstallExecuteSequence>
+		<Custom Action="PGINIT" After="InstallFiles" Condition="NOT Installed"/>
+		<Custom Action="PGREG" After="PGINIT" Condition="NOT Installed"/>
+		<Custom Action="StartPG" After="PGREG" Condition="NOT Installed"/>
+		<Custom Action="PGCONF1" After="StartPG" Condition="NOT Installed"/>
+		<Custom Action="PGCONF2" After="PGCONF1" Condition="NOT Installed"/>
+
+		<Custom Action="StopPG" Before="RemovePG" />
+		<Custom Action="RemovePG" Before="RemoveFiles"/>
+
+	</InstallExecuteSequence>
+		
+		
+	</Package>
 </Wix>

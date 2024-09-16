@@ -1,0 +1,18 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Module Id="nssmMerge" Guid="595054cd-56d6-412b-b872-50206404151a" Language="1033" Version="1.0.0.0">
+		<SummaryInformation Manufacturer="Note-Taker" />
+
+		<StandardDirectory Id="ProgramFiles64Folder">
+			<Directory Id="INSTALLFOLDER" Name="Note-Taker">
+				<Directory Id="DIR_BINARY" Name="bin">
+					<Directory Id="DIR_NSSM" Name="nssm">
+						<Component Id="NSSMComponent" Guid="a0626584-68d2-4aff-a41b-f287b8e014a4">
+							<File Id ="nssmFile" Name="nssm.exe" Source="C:\Users\hkaus\source\binaries\nssm-2.24\win64\nssm.exe" KeyPath="yes"/>
+						</Component>
+					</Directory>
+				</Directory>
+			</Directory>
+		</StandardDirectory>
+
+	</Module>
+</Wix>
