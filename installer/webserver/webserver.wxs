@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Define the variables in "$(var.*) expressions" -->
+<?define Name = "WebServer" ?>
+<?define Manufacturer = "Note-Taker" ?>
+<?define Version = "1.0.0.0" ?>
+<?define ProductCode = "e7ad2776-ee39-44cb-82fd-01cc7e263ba0" ?>
+<?define UpgradeCode = "ca751cae-0501-48aa-bdae-e9bd6bd7d8e3" ?>
+
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+	<Package Name="$(Name)"
+			 Manufacturer="$(Manufacturer)"
+			 Version="$(Version)"
+			 ProductCode="$(var.ProductCode)"
+			 UpgradeCode="$(var.UpgradeCode)"
+			 Compressed="true">
+
+		<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+		<Media Id="1" Cabinet="WebServer.cab" EmbedCab="yes"/>
+
+		<!--Define and add files to the Directory strcture-->
+		<StandardDirectory Id="ProgramFiles64Folder">
+			<Directory Id="INSTALLFOLDER" Name="!(bind.Property.Manufacturer)">
+				<Directory Id="DIR_BINARY" Name="bin">
+					<Directory Id="DIR_WEBSERVER" Name="webserver">
+						<Files Include="C:\Users\hkaus\source\binaries\httpd-2.4.62-240718-win64-VS17\Apache24\**">
+							<Exclude Files="C:\Users\hkaus\source\binaries\httpd-2.4.62-240718-win64-VS17\Apache24\bin\httpd.exe"/>
+							<Exclude Files="C:\Users\hkaus\source\binaries\httpd-2.4.62-240718-win64-VS17\Apache24\conf\httpd.conf"/> 
+						</Files>
+						 <Directory Id="DIR_WEBSERVERCONF" Name="conf">
+							<File Source="C:\Users\hkaus\source\repos\note-taker\installer\webserver\httpd.conf"/>
+						</Directory> 
+					</Directory>
+				</Directory>
+				<Directory Id="DIR_WEBAPP" Name="webapp">
+					<Files Include="C:\Users\hkaus\source\binaries\dist\note-taker\browser\*"/>
+				</Directory>
+			</Directory>
+		</StandardDirectory>
+
+		<!--Add Exclusive file to the installer package -->
+		<DirectoryRef Id ="DIR_WEBSERVER">
+			<Directory Id="DIR_WEBSERVER_BIN" Name="bin">
+				<Component Id="WebServerComponent" Guid="c84fe6ce-1272-490a-88cb-c2633f206f3c">
+					<File Id="WebServerExe" Source="C:\Users\hkaus\source\binaries\httpd-2.4.62-240718-win64-VS17\Apache24\bin\httpd.exe"/>
+					<RemoveFile Id="WebServerExe" Name="*.exe" On="uninstall" Directory="DIR_WEBSERVER_BIN"/>
+				</Component>
+			</Directory>
+		</DirectoryRef>
+
+		<CustomAction Id="WebServerInstaller"
+					  FileRef="WebServerExe"
+					  ExeCommand='-k install -n "NoteTakerWebserver"'
+					  Execute="deferred"
+					  Return="check"
+					  Impersonate="no"
+		/>
+
+		<CustomAction Id="StopWebServer"
+					  Directory="SystemFolder"
+					  ExeCommand='sc stop "NoteTakerWebserver"'
+					  Execute="deferred"
+					  Return="ignore"
+					  Impersonate="no"
+		/>
+
+		<CustomAction Id="RemoveWebServer"
+					  Directory="SystemFolder"
+					  ExeCommand='sc delete "NoteTakerWebserver"'
+					  Execute="deferred"
+					  Return="ignore"
+					  Impersonate="no"
+		/>
+
+		<InstallExecuteSequence>
+			<Custom Action="WebServerInstaller" After="InstallFiles" Condition="NOT Installed"/>
+			<Custom Action="StopWebServer" Before="RemoveWebServer"/>
+			<Custom Action="RemoveWebServer" Before="RemoveFiles"/>
+		</InstallExecuteSequence>
+
+	</Package>
+</Wix>

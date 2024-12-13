@@ -63,7 +63,7 @@
 
 	<CustomAction Id="PGREG"
 					FileRef="PG_CTL"
-					ExeCommand='register -D "[DIR_PGDATA]"'
+					ExeCommand='register -N NoteTakerDatabase -D "[DIR_PGDATA]"'
 					Execute="deferred"
 					Return="check"
 					Impersonate="no"
@@ -71,7 +71,7 @@
 
 	<CustomAction Id="StartPG"
 				Directory="SystemFolder"
-				ExeCommand='sc start "PostgreSQL"'
+				ExeCommand='sc start "NoteTakerDatabase"'
 				Execute="deferred"
 				Return="check"
 				Impersonate="no"
@@ -91,11 +91,18 @@
 					Return="check"
 					Impersonate="no"
 	/>
-
-
-	<CustomAction Id="StopPG"
+	<CustomAction Id="StopPG_INSTALL"
 					Directory="SystemFolder"
-					ExeCommand='sc stop "PostgreSQL"'
+					ExeCommand='sc stop "NoteTakerDatabase"'
+					Execute="deferred"
+					Return="ignore"
+					Impersonate="no"
+	/>
+
+
+		<CustomAction Id="StopPG_UNINSTALL"
+					Directory="SystemFolder"
+					ExeCommand='sc stop "NoteTakerDatabase"'
 					Execute="deferred"
 					Return="ignore"
 					Impersonate="no"
@@ -103,7 +110,7 @@
 
 	<CustomAction Id="RemovePG"
 					Directory="SystemFolder"
-					ExeCommand='sc delete "PostgreSQL"'
+					ExeCommand='sc delete "NoteTakerDatabase"'
 					Execute="deferred"
 					Return="ignore"
 					Impersonate="no"
@@ -117,22 +124,18 @@
 					Impersonate="no" 
 	/>
 		
-		<!--CREATE DATABASE note_taker;-->
-		<!--ALTER USER postgres WITH PASSWORD 'guest';-->
-
 	<InstallExecuteSequence>
 		<Custom Action="PGINIT" After="InstallFiles" Condition="NOT Installed"/>
 		<Custom Action="PGREG" After="PGINIT" Condition="NOT Installed"/>
 		<Custom Action="StartPG" After="PGREG" Condition="NOT Installed"/>
 		<Custom Action="PGCONF1" After="StartPG" Condition="NOT Installed"/>
 		<Custom Action="PGCONF2" After="PGCONF1" Condition="NOT Installed"/>
+		<Custom Action="StopPG_INSTALL" After="PGCONF2" Condition="NOT Installed"/>
 
-		<Custom Action="StopPG" Before="RemovePG" />
+		<Custom Action="StopPG_UNINSTALL" Before="RemovePG" />
 		<Custom Action="RemovePG" Before="RemoveFiles"/>
 		<Custom Action="CleanPG" After="RemoveFiles"/>
-
 	</InstallExecuteSequence>
-		
 		
 	</Package>
 </Wix>

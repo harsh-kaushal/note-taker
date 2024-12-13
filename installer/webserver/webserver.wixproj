@@ -1,0 +1,5 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.1">
+  <ItemGroup>
+    <None Include="httpd.conf" />
+  </ItemGroup>
+</Project>
